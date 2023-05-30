@@ -7,6 +7,20 @@
     android:background="@drawable/background"
     tools:context=".MainActivity">
 
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5">
+
+
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/glMainLocation"
         android:layout_width="wrap_content"
@@ -382,6 +396,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/layout_pollution"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="6dp"
@@ -408,6 +423,7 @@
                     android:textSize="18sp" />
 
                 <TextView
+                    android:id="@+id/tvAirQual"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -428,21 +444,30 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.90" />
 
-        <TextView
-            android:id="@+id/tv_forecast"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="0dp"
-            android:text="@string/five_days_forecast"
-            android:textSize="18sp"
-            android:padding="5dp"
-            app:layout_constraintBottom_toTopOf="@+id/glMainForecastBtn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/glMainForecastBtn"
-            app:drawableBottomCompat="@drawable/ic_down" />
+    <TextView
+        android:id="@+id/tv_forecast"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="0dp"
+        android:padding="5dp"
+        android:text="@string/five_days_forecast"
+        android:textSize="18sp"
+        app:drawableBottomCompat="@drawable/ic_down"
+        app:layout_constraintBottom_toTopOf="@+id/glMainForecastBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/glMainForecastBtn" />
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
