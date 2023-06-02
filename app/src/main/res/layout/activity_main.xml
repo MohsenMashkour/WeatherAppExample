@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    >
 
 
 
@@ -17,7 +18,8 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5">
+        app:layout_constraintVertical_bias="0.5"
+        android:padding="10dp">
 
 
 
@@ -58,7 +60,28 @@
             android:text="@string/updated_at"
             android:textColor="@color/black"
             android:textSize="20sp" />
+
+        <androidx.cardview.widget.CardView
+            app:cardElevation="8dp"
+            android:layout_margin="16dp"
+            android:id="@+id/cardSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/semi_transparent"
+            app:cardCornerRadius="10dp">
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:iconifiedByDefault="false"
+                app:queryHint="Search here...." />
+
+        </androidx.cardview.widget.CardView>
+
     </LinearLayout>
+
+
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/glMainTemp"
@@ -93,7 +116,7 @@
             android:id="@+id/tv_temp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="36dp"
+            android:layout_marginTop="16dp"
             android:text="@string/_24_c"
             android:textColor="@color/black"
             android:textSize="80sp"
@@ -131,7 +154,7 @@
 
         <ImageView
             android:id="@+id/img_weather"
-            android:layout_width="250dp"
+            android:layout_width="220dp"
             android:layout_height="200dp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_temp"
             app:layout_constraintEnd_toEndOf="parent"

@@ -1,11 +1,22 @@
 package com.mkrdeveloper.weatherappexample
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
+import android.location.Location
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
+import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.mkrdeveloper.weatherappexample.adapter.RvAdapter
 import com.mkrdeveloper.weatherappexample.data.forecastModels.ForecastData
@@ -33,6 +44,10 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var pollutionFragment: PollutionFragment
 
+    private var city: String = "berlin"
+
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,13 +59,78 @@ class MainActivity : AppCompatActivity() {
 
         pollutionFragment = PollutionFragment()
 
-        getCurrentWeather()
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+
+        binding.searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+
+                if (query!= null){
+                    city = query
+                }
+                getCurrentWeather(city)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false
+            }
+
+        })
+
+        //fetchLocation()
+        getCurrentWeather(city)
 
         binding.tvForecast.setOnClickListener {
 
             openDialog()
         }
+
+        binding.tvLocation.setOnClickListener {
+            fetchLocation()
+        }
+
     }
+
+    private fun fetchLocation() {
+        val task: Task<Location> = fusedLocationProviderClient.lastLocation
+
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),101
+            )
+            return
+        }
+
+        task.addOnSuccessListener {
+            val geocoder=Geocoder(this,Locale.getDefault())
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+                geocoder.getFromLocation(it.latitude,it.longitude,1, object: Geocoder.GeocodeListener{
+                    override fun onGeocode(addresses: MutableList<Address>) {
+                        city = addresses[0].locality
+                    }
+
+                })
+            }else{
+                val address = geocoder.getFromLocation(it.latitude,it.longitude,1) as List<Address>
+
+                city = address[0].locality
+            }
+
+            getCurrentWeather(city)
+        }
+    }
+
 
     private fun openDialog() {
         getForecast()
@@ -71,7 +151,7 @@ class MainActivity : AppCompatActivity() {
         GlobalScope.launch(Dispatchers.IO) {
             val response = try {
                 RetrofitInstance.api.getForecast(
-                    "berlin",
+                    city,
                     "metric",
                     applicationContext.getString(R.string.api_key)
                 )
@@ -90,9 +170,7 @@ class MainActivity : AppCompatActivity() {
 
                     val data = response.body()!!
 
-                    var forecastArray = arrayListOf<ForecastData>()
-
-                    forecastArray = data.list as ArrayList<ForecastData>
+                    val forecastArray: ArrayList<ForecastData> = data.list as ArrayList<ForecastData>
 
                     val adapter = RvAdapter(forecastArray)
                     sheetLayoutBinding.rvForecast.adapter = adapter
@@ -105,11 +183,11 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     @OptIn(DelicateCoroutinesApi::class)
-    private fun getCurrentWeather() {
+    private fun getCurrentWeather(city: String) {
         GlobalScope.launch(Dispatchers.IO) {
             val response = try {
                 RetrofitInstance.api.getCurrentWeather(
-                    "berlin",
+                    city,
                     "metric",
                     applicationContext.getString(R.string.api_key)
                 )
@@ -146,7 +224,7 @@ class MainActivity : AppCompatActivity() {
 
                     binding.apply {
                         tvStatus.text = data.weather[0].description
-                        tvWind.text = "${data.wind.speed.toString()} KM/H"
+                        tvWind.text = "${data.wind.speed} KM/H"
                         tvLocation.text = "${data.name}\n${data.sys.country}"
                         tvTemp.text = "${data.main.temp.toInt()}°C"
                         tvFeelsLike.text = "Feels like: ${data.main.feels_like.toInt()}°C"
